@@ -1,6 +1,6 @@
 title: Bigbookshelf
 iconUri: https://github.com/KTheMan/bigbookshelf/blob/main/assets/largeIcon.png?raw=true
-manifestUrl: https://webos-hb.knnygrdn.com/manifests/com.bigbookshelf.tv.json
+manifestUrl: https://raw.githubusercontent.com/KTheMan/webos-apps-repo/main/manifests/com.bigbookshelf.tv.json
 category: multimedia
 pool: main
 description: |
