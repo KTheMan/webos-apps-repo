@@ -1,0 +1,62 @@
+name: Sync Bigbookshelf
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  repository_dispatch:
+    types: [update-bigbookshelf]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest release from Bigbookshelf
+        id: release
+        run: |
+          REPO="KTheMan/bigbookshelf"
+          RELEASE_DATA=$(curl -s https://api.github.com/repos/$REPO/releases/latest)
+          
+          VERSION=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
+          # Find the .ipk asset for webOS
+          IPK_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name | contains("bigbookshelf-webos.ipk")) | .browser_download_url')
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "ipk_url=$IPK_URL" >> $GITHUB_OUTPUT
+          
+          if [ -z "$IPK_URL" ]; then
+            echo "Could not find .ipk asset in latest release"
+            exit 1
+          fi
+
+      - name: Generate manifest
+        run: |
+          VERSION=${{ steps.release.outputs.version }}
+          IPK_URL=${{ steps.release.outputs.ipk_url }}
+          
+          cat <<EOF > manifests/com.bigbookshelf.tv.json
+          {
+            "id": "com.bigbookshelf.tv",
+            "version": "$VERSION",
+            "ipkUrl": "$IPK_URL"
+          }
+          EOF
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifests/com.bigbookshelf.tv.json
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update bigbookshelf manifest to ${{ steps.release.outputs.version }}"
+            git push
+          fi

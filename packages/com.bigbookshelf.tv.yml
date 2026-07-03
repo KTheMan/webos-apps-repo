@@ -1,0 +1,22 @@
+title: Bigbookshelf
+iconUri: https://github.com/KTheMan/bigbookshelf/blob/main/assets/largeIcon.png?raw=true
+manifestUrl: https://webos-hb.knnygrdn.com/manifests/com.bigbookshelf.tv.json
+category: multimedia
+pool: main
+description: |
+  # Bigbookshelf
+  
+  > An Audiobookshelf client for Smart TVs — LG webOS and Samsung Tizen.
+  
+  **Bigbookshelf** allows you to connect to any self-hosted Audiobookshelf server and browse your audiobook and podcast libraries directly from your TV.
+  
+  ## Features
+  - Connect to any self-hosted Audiobookshelf server
+  - Browse audiobook and podcast libraries
+  - Full audio playback with progress tracking
+  - Remote control navigation (D-pad, media keys, color keys)
+  - Bookshelf grid with keyboard navigation
+  - Server connection management
+  - Sleep timer and playback speed controls
+  - Bookmarks and chapter navigation
+  - Multi-language support (30+ languages)
