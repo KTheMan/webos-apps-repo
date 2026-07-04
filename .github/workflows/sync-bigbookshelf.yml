@@ -22,31 +22,55 @@ jobs:
         run: |
           REPO="KTheMan/bigbookshelf"
           RELEASE_DATA=$(curl -s https://api.github.com/repos/$REPO/releases/latest)
-          
+
           VERSION=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
           # Find the .ipk asset for webOS
-          IPK_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name | contains("bigbookshelf-webos.ipk")) | .browser_download_url')
-          
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "ipk_url=$IPK_URL" >> $GITHUB_OUTPUT
-          
+          IPK_ASSET=$(echo "$RELEASE_DATA" | jq -c '.assets[] | select(.name | contains("bigbookshelf-webos.ipk"))')
+          IPK_URL=$(echo "$IPK_ASSET" | jq -r '.browser_download_url // empty')
+          IPK_SIZE=$(echo "$IPK_ASSET" | jq -r '.size // empty')
+          IPK_SHA256=$(echo "$IPK_ASSET" | jq -r '.digest // empty' | sed 's/^sha256://')
+
           if [ -z "$IPK_URL" ]; then
             echo "Could not find .ipk asset in latest release"
             exit 1
           fi
+          if [ -z "$IPK_SHA256" ]; then
+            echo "Release asset is missing a sha256 digest"
+            exit 1
+          fi
+
+          # appinfo.json ships inside the tagged source tree and carries the
+          # fields the homebrew channel app's manifest schema requires
+          APPINFO=$(curl -s "https://raw.githubusercontent.com/$REPO/$VERSION/appinfo.json")
+          APP_TYPE=$(echo "$APPINFO" | jq -r '.type')
+          APP_TITLE=$(echo "$APPINFO" | jq -r '.title')
+          APP_DESC=$(echo "$APPINFO" | jq -r '.appDescription')
+          APP_ICON=$(echo "$APPINFO" | jq -r '.largeIcon')
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "ipk_url=$IPK_URL" >> $GITHUB_OUTPUT
+          echo "ipk_size=$IPK_SIZE" >> $GITHUB_OUTPUT
+          echo "ipk_sha256=$IPK_SHA256" >> $GITHUB_OUTPUT
+          echo "app_type=$APP_TYPE" >> $GITHUB_OUTPUT
+          echo "app_title=$APP_TITLE" >> $GITHUB_OUTPUT
+          echo "app_desc=$APP_DESC" >> $GITHUB_OUTPUT
+          echo "app_icon=$APP_ICON" >> $GITHUB_OUTPUT
 
       - name: Generate manifest
         run: |
-          VERSION=${{ steps.release.outputs.version }}
-          IPK_URL=${{ steps.release.outputs.ipk_url }}
-          
-          cat <<EOF > manifests/com.bigbookshelf.tv.json
-          {
-            "id": "com.bigbookshelf.tv",
-            "version": "$VERSION",
-            "ipkUrl": "$IPK_URL"
-          }
-          EOF
+          jq -n \
+            --arg id "com.bigbookshelf.tv" \
+            --arg title "${{ steps.release.outputs.app_title }}" \
+            --arg version "${{ steps.release.outputs.version }}" \
+            --arg type "${{ steps.release.outputs.app_type }}" \
+            --arg appDescription "${{ steps.release.outputs.app_desc }}" \
+            --arg iconUri "https://raw.githubusercontent.com/KTheMan/bigbookshelf/${{ steps.release.outputs.version }}/${{ steps.release.outputs.app_icon }}" \
+            --arg sourceUrl "https://github.com/KTheMan/bigbookshelf" \
+            --arg ipkUrl "${{ steps.release.outputs.ipk_url }}" \
+            --arg sha256 "${{ steps.release.outputs.ipk_sha256 }}" \
+            --argjson ipkSize "${{ steps.release.outputs.ipk_size }}" \
+            '{id: $id, title: $title, version: $version, type: $type, appDescription: $appDescription, iconUri: $iconUri, sourceUrl: $sourceUrl, rootRequired: false, ipkUrl: $ipkUrl, ipkHash: {sha256: $sha256}, ipkSize: $ipkSize}' \
+            > manifests/com.bigbookshelf.tv.json
 
       - name: Commit and push changes
         run: |
