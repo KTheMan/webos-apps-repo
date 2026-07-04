@@ -1,0 +1,22 @@
+title: MagicRemoteService
+iconUri: https://raw.githubusercontent.com/KTheMan/MagicRemoteService-HBC/v1.2.5.4/MagicRemoteService/Resources/TV/MagicRemoteService/largeIcon.png
+manifestUrl: https://raw.githubusercontent.com/KTheMan/webos-apps-repo/main/manifests/com.cathwyler.magicremoteservice.json
+category: utility
+pool: main
+description: |
+  # MagicRemoteService
+
+  > Use your LG Magic Remote as a Windows mouse and control your PC from your LG webOS TV.
+
+  **MagicRemoteService** pairs with a Windows companion app to let your Magic Remote drive your PC's mouse and keyboard, with Wake-on-LAN support to power it on from the couch.
+
+  This is a Homebrew Channel packaging of the [original MagicRemoteService project](https://github.com/Cathwyler/MagicRemoteService) by Cathwyler, which is normally installed via a one-off Developer Mode push from its Windows companion app. This variant lets it install and stay installed permanently through Homebrew Channel instead.
+
+  ## Features
+  - Use the Magic Remote as a Windows mouse (pointer, clicks, scroll wheel)
+  - Wake-on-LAN to power on your PC from the remote
+  - Remote-mapped shortcuts (right click, Windows menu, escape, copy/paste, arrow keys)
+  - Pop up the webOS keyboard for text entry on the PC
+
+  ## Setup
+  You'll still need the Windows companion app from the [upstream project](https://github.com/Cathwyler/MagicRemoteService) to configure the PC side and pair it with your TV — this package only replaces how the TV-side app/service gets installed.
