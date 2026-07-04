@@ -67,7 +67,6 @@ LOAD_CONTENT_CACHE = False
 
 MENUITEMS = (
     ('Applications', '/apps'),
-    ('Submit', '/submit'),
 )
 
 LINKS = (
