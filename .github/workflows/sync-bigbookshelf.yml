@@ -39,12 +39,18 @@ jobs:
             exit 1
           fi
 
-          # appinfo.json ships inside the tagged source tree and carries the
-          # fields the homebrew channel app's manifest schema requires
-          APPINFO=$(curl -s "https://raw.githubusercontent.com/$REPO/$VERSION/appinfo.json")
+          # Read appinfo.json out of the actual shipped ipk rather than the
+          # source tree, since the repo's root-level appinfo.json isn't
+          # necessarily what the build actually packages
+          SCRATCH=$(mktemp -d)
+          curl -sL -o "$SCRATCH/bigbookshelf.ipk" "$IPK_URL"
+          (cd "$SCRATCH" && ar x bigbookshelf.ipk data.tar.gz)
+          APPINFO=$(tar -xzO -f "$SCRATCH/data.tar.gz" usr/palm/applications/com.bigbookshelf.tv/appinfo.json)
+          rm -rf "$SCRATCH"
+
           APP_TYPE=$(echo "$APPINFO" | jq -r '.type')
           APP_TITLE=$(echo "$APPINFO" | jq -r '.title')
-          APP_DESC=$(echo "$APPINFO" | jq -r '.appDescription')
+          APP_DESC=$(echo "$APPINFO" | jq -r '.appDescription // "Audiobookshelf client for Smart TVs"')
           APP_ICON=$(echo "$APPINFO" | jq -r '.largeIcon')
 
           echo "version=$VERSION" >> $GITHUB_OUTPUT
