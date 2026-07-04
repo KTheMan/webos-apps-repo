@@ -33,6 +33,11 @@ jobs:
   package-check:
     needs: filter-paths
     if: ${{ needs.filter-paths.outputs.need-package == 'true' }}
+    permissions:
+      actions: read
+      pull-requests: read
+      contents: read
+      issues: read
     uses: ./.github/workflows/package-lint.yml
     with:
       packages: ${{ needs.filter-paths.outputs.packages-files }}
