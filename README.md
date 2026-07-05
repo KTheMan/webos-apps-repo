@@ -1,19 +1,23 @@
-# Bigbookshelf Distribution Repository
+# Personal webOS Homebrew Repository
 
-This is a personal fork of the [webOS Homebrew app repository](https://github.com/webosbrew/apps-repo), used exclusively to distribute [Bigbookshelf](https://github.com/KTheMan/bigbookshelf) — an Audiobookshelf client for LG webOS and Samsung Tizen TVs.
+This is a personal fork of the [webOS Homebrew app repository](https://github.com/webosbrew/apps-repo), used to distribute apps I make or curate myself for the LG webOS Homebrew Channel.
 
 ## Purpose
 
-- **Distribute** the latest Bigbookshelf builds to webOS Homebrew Channel users.
-- **Test edge releases** before they are pushed to the official webosbrew repository.
+- **Distribute** apps I build, or Homebrew Channel packagings I maintain of other open source projects, to webOS Homebrew Channel users.
+- **Test edge releases** before anything gets pushed to the official webosbrew repository.
 - This repository is **not** accepting third-party applications or submissions.
+
+## Apps
+
+- [Bigbookshelf](https://github.com/KTheMan/bigbookshelf) — an Audiobookshelf client for LG webOS and Samsung Tizen TVs.
+- [MagicRemoteService](https://github.com/KTheMan/MagicRemoteService-HBC) — a Homebrew Channel packaging of [Cathwyler/MagicRemoteService](https://github.com/Cathwyler/MagicRemoteService) (use the LG Magic Remote as a Windows mouse), which upstream only distributes via a one-off Developer Mode push.
 
 ## Installation
 
-The app is discoverable through the [webOS Homebrew Channel](https://github.com/webosbrew/webos-homebrew-channel) on your TV. For direct installation instructions, see the [Bigbookshelf repository](https://github.com/KTheMan/bigbookshelf).
+Apps are discoverable through the [webOS Homebrew Channel](https://github.com/webosbrew/webos-homebrew-channel) on your TV. See each app's own repository (linked above) for further setup.
 
 ## Related Resources
 
-- [Bigbookshelf](https://github.com/KTheMan/bigbookshelf) — Main source repository
 - [webOS Homebrew Project](https://github.com/webosbrew)
 - [openlgtv Project](https://openlgtv.github.io/)
