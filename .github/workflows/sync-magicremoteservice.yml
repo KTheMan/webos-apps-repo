@@ -34,7 +34,16 @@ jobs:
             exit 1
           fi
 
-          curl -sf -o manifests/com.cathwyler.magicremoteservice.json "$MANIFEST_URL"
+          curl -sfL -o manifests/com.cathwyler.magicremoteservice.json "$MANIFEST_URL"
+
+          # curl -f only errors on HTTP 4xx/5xx, not on a followed redirect
+          # landing on an empty/unexpected body - verify we actually got
+          # valid, non-empty JSON before it's allowed anywhere near a commit.
+          if ! jq -e '.version and .ipkUrl' manifests/com.cathwyler.magicremoteservice.json > /dev/null; then
+            echo "Downloaded manifest is missing or malformed:"
+            cat manifests/com.cathwyler.magicremoteservice.json
+            exit 1
+          fi
 
       - name: Commit and push changes
         id: commit
