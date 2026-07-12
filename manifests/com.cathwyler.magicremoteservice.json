@@ -1,0 +1,15 @@
+{
+  "id": "com.cathwyler.magicremoteservice",
+  "title": "MagicRemoteService",
+  "version": "1.3.2",
+  "type": "web",
+  "appDescription": "Use your LG Magic Remote as a Windows mouse and control your PC from your LG webOS TV",
+  "iconUri": "https://raw.githubusercontent.com/KTheMan/MagicRemoteService-HBC/v1.3.2/MagicRemoteService/Resources/TV/MagicRemoteService/largeIcon.png",
+  "sourceUrl": "https://github.com/Cathwyler/MagicRemoteService",
+  "rootRequired": false,
+  "ipkUrl": "https://github.com/KTheMan/MagicRemoteService-HBC/releases/download/v1.3.2/com.cathwyler.magicremoteservice_all.ipk",
+  "ipkHash": {
+    "sha256": "5ec4b36cafa60f40c8fd2ab21116547c7c774b4466911d875dcc946a94608f04"
+  },
+  "ipkSize": 113474
+}
