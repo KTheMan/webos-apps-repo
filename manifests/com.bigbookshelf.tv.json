@@ -1,15 +1,15 @@
 {
   "id": "com.bigbookshelf.tv",
   "title": "Bigbookshelf",
-  "version": "v0.14.2",
+  "version": "v0.14.3",
   "type": "web",
   "appDescription": "Audiobookshelf client for Smart TVs",
-  "iconUri": "https://raw.githubusercontent.com/KTheMan/bigbookshelf/v0.14.2/assets/largeIcon.png",
+  "iconUri": "https://raw.githubusercontent.com/KTheMan/bigbookshelf/v0.14.3/assets/largeIcon.png",
   "sourceUrl": "https://github.com/KTheMan/bigbookshelf",
   "rootRequired": false,
-  "ipkUrl": "https://github.com/KTheMan/bigbookshelf/releases/download/v0.14.2/bigbookshelf-webos.ipk",
+  "ipkUrl": "https://github.com/KTheMan/bigbookshelf/releases/download/v0.14.3/bigbookshelf-webos.ipk",
   "ipkHash": {
-    "sha256": "6def7216ed47360110b67049d44f5b8e1c6ebc59cfae6d0732f223cdbd38454a"
+    "sha256": "b4f7e79e49a3701bdc02d8141d8a89804561ef1d4ce0277b7ba0568c3c0a3d09"
   },
-  "ipkSize": 3411444
+  "ipkSize": 3411742
 }
