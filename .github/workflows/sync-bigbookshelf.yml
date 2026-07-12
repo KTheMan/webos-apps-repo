@@ -24,7 +24,13 @@ jobs:
           REPO="KTheMan/bigbookshelf"
           RELEASE_DATA=$(curl -s https://api.github.com/repos/$REPO/releases/latest)
 
-          VERSION=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
+          TAG=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
+          # webOS requires appinfo.json's version to be plain numeric
+          # major.minor.micro (no "v" prefix), so that's what actually ends up
+          # installed on the device. Strip it here too so the manifest's
+          # "version" field (what Homebrew Channel compares against) matches,
+          # instead of comparing "v0.14.3" against "0.14.3" forever.
+          VERSION="${TAG#v}"
           # Find the .ipk asset for webOS
           IPK_ASSET=$(echo "$RELEASE_DATA" | jq -c '.assets[] | select(.name | contains("bigbookshelf-webos.ipk"))')
           IPK_URL=$(echo "$IPK_ASSET" | jq -r '.browser_download_url // empty')
@@ -54,6 +60,7 @@ jobs:
           APP_DESC=$(echo "$APPINFO" | jq -r '.appDescription // "Audiobookshelf client for Smart TVs"')
           APP_ICON=$(echo "$APPINFO" | jq -r '.largeIcon')
 
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "ipk_url=$IPK_URL" >> $GITHUB_OUTPUT
           echo "ipk_size=$IPK_SIZE" >> $GITHUB_OUTPUT
@@ -71,7 +78,7 @@ jobs:
             --arg version "${{ steps.release.outputs.version }}" \
             --arg type "${{ steps.release.outputs.app_type }}" \
             --arg appDescription "${{ steps.release.outputs.app_desc }}" \
-            --arg iconUri "https://raw.githubusercontent.com/KTheMan/bigbookshelf/${{ steps.release.outputs.version }}/${{ steps.release.outputs.app_icon }}" \
+            --arg iconUri "https://raw.githubusercontent.com/KTheMan/bigbookshelf/${{ steps.release.outputs.tag }}/${{ steps.release.outputs.app_icon }}" \
             --arg sourceUrl "https://github.com/KTheMan/bigbookshelf" \
             --arg ipkUrl "${{ steps.release.outputs.ipk_url }}" \
             --arg sha256 "${{ steps.release.outputs.ipk_sha256 }}" \
