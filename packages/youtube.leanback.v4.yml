@@ -1,0 +1,23 @@
+title: YouTube Cobalt AdFree
+iconUri: https://raw.githubusercontent.com/RF1705/youtube-webos-cobalt-adfree/main/assets/largeIcon.png
+manifestUrl: https://raw.githubusercontent.com/KTheMan/webos-apps-repo/main/manifests/youtube.leanback.v4.json
+category: internet
+pool: main
+description: |
+  # YouTube Cobalt AdFree
+
+  > Unofficial Cobalt-based YouTube client for webOS with ad blocking and SponsorBlock support.
+
+  **YouTube Cobalt AdFree** patches the webOS YouTube application by replacing the Cobalt runtime to add ad blocking, SponsorBlock integration, and additional playback features.
+
+  This is a community-maintained fork by [RF1705](https://github.com/RF1705/youtube-webos-cobalt-adfree) and is not affiliated with YouTube, Google, LG, or webOS.
+
+  ## Features
+  - Advertisement blocking
+  - SponsorBlock support (skip sponsored segments)
+  - Return YouTube Dislike support
+  - Playback speed control (0.25× to 2×)
+  - Optional autostart integration
+
+  ## Notes
+  This app replaces the official YouTube application (`youtube.leanback.v4`) on your TV. It is subject to breaking changes from YouTube, Cobalt, or LG updates.

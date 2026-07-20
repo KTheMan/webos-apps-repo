@@ -1,0 +1,92 @@
+name: Sync YouTube Cobalt AdFree
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  repository_dispatch:
+    types: [update-youtube-cobalt-adfree]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch latest manifest from youtube-webos-cobalt-adfree
+        run: |
+          REPO="RF1705/youtube-webos-cobalt-adfree"
+          RELEASE_DATA=$(curl -s https://api.github.com/repos/$REPO/releases/latest)
+
+          TAG=$(echo "$RELEASE_DATA" | jq -r '.tag_name')
+
+          # The upstream release attaches a manifest JSON - reuse it but fix
+          # the relative ipkUrl to be absolute, and augment with ipkSize from
+          # the release asset metadata.
+          MANIFEST_URL=$(echo "$RELEASE_DATA" | jq -r '.assets[] | select(.name == "youtube.leanback.v4.manifest.json") | .browser_download_url // empty')
+
+          if [ -z "$MANIFEST_URL" ]; then
+            echo "Could not find youtube.leanback.v4.manifest.json asset in latest release"
+            exit 1
+          fi
+
+          curl -sfL -o /tmp/upstream-manifest.json "$MANIFEST_URL"
+
+          if ! jq -e '.version and .ipkUrl' /tmp/upstream-manifest.json > /dev/null; then
+            echo "Downloaded manifest is missing or malformed:"
+            cat /tmp/upstream-manifest.json
+            exit 1
+          fi
+
+          # Build the absolute IPK URL from the release tag and the asset filename
+          IPK_NAME=$(jq -r '.ipkUrl' /tmp/upstream-manifest.json)
+          IPK_URL="https://github.com/$REPO/releases/download/$TAG/$IPK_NAME"
+
+          # Get the IPK asset size from the release metadata
+          IPK_SIZE=$(echo "$RELEASE_DATA" | jq -r --arg name "$IPK_NAME" '.assets[] | select(.name == $name) | .size // empty')
+
+          # Merge everything into the local manifest, resolving the relative ipkUrl
+          if [ -n "$IPK_SIZE" ]; then
+            jq --arg ipkUrl "$IPK_URL" --argjson ipkSize "$IPK_SIZE" \
+              '. + {ipkUrl: $ipkUrl, ipkSize: $ipkSize}' \
+              /tmp/upstream-manifest.json > manifests/youtube.leanback.v4.json
+          else
+            jq --arg ipkUrl "$IPK_URL" \
+              '. + {ipkUrl: $ipkUrl}' \
+              /tmp/upstream-manifest.json > manifests/youtube.leanback.v4.json
+          fi
+
+      - name: Commit and push changes
+        id: commit
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifests/youtube.leanback.v4.json
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(jq -r '.version' manifests/youtube.leanback.v4.json)
+            git commit -m "chore: update YouTube Cobalt AdFree manifest to $VERSION"
+            git push
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      # A commit pushed with the default GITHUB_TOKEN doesn't trigger other
+      # workflows' `on: push` (GitHub suppresses that to prevent infinite
+      # workflow loops), so Site: Deploy wouldn't otherwise pick this up
+      # until its own 3-hourly cron. Dispatch it explicitly instead.
+      - name: Trigger site deploy
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          curl -sf -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/KTheMan/webos-apps-repo/actions/workflows/site-deploy.yml/dispatches \
+            -d '{"ref":"main"}'
